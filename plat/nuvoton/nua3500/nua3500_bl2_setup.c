@@ -1,0 +1,164 @@
+/*
+ * Copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+#include <assert.h>
+
+#include <drivers/arm/sp804_delay_timer.h>
+#include <common/desc_image_load.h>
+#include <drivers/generic_delay_timer.h>
+#include <lib/mmio.h>
+#include <plat/arm/common/plat_arm.h>
+#include <plat/common/platform.h>
+#include <platform_def.h>
+#include <common/debug.h>
+#include <lib/optee_utils.h>
+
+#include "nua3500_private.h"
+
+void bl2_early_platform_setup2(u_register_t arg0, u_register_t arg1, u_register_t arg2, u_register_t arg3)
+{
+	arm_bl2_early_platform_setup((uintptr_t)arg0, (meminfo_t *)arg1);
+
+	/* Initialize the platform config for future decision making */
+	nua3500_config_setup();
+}
+
+/*
+ * bl2_platform_setup()
+ * MMU on - enabled by bl2_el3_plat_arch_setup()
+ */
+void bl2_platform_setup(void)
+{
+}
+
+
+void bl2_el3_plat_arch_setup(void)
+{
+	/* Setup the MMU here */
+	mmap_add_region(BL_CODE_BASE, BL_CODE_BASE,
+			BL_CODE_END - BL_CODE_BASE,
+			MT_CODE | MT_SECURE);
+
+	/* Prevent corruption of preloaded BL31 */
+	mmap_add_region(BL31_BASE, BL31_BASE,
+			BL31_LIMIT - BL31_BASE,
+			MT_RO_DATA | MT_SECURE);
+
+	mmap_add_region(BL32_BASE, BL32_BASE,
+			BL32_LIMIT - BL32_BASE,
+			MT_MEMORY | MT_RW | MT_SECURE);
+
+	/* Prevent corruption of preloaded Device Tree */
+	mmap_add_region(DTB_BASE, DTB_BASE,
+			DTB_LIMIT - DTB_BASE,
+			MT_RO_DATA | MT_SECURE);
+
+	/* config MMC */
+	configure_mmu();
+
+	generic_delay_timer_init();
+
+	/* TODO: clock initial ? */
+
+	/* TODO: system config initial, power? */
+
+
+	/* TODO: doing ECC and AES? */
+#if 0
+	nua3500_init_auth(&stm32mp1_auth_ops);
+#endif
+	nua3500_arch_security_setup();
+
+	/* TODO: io setup? */
+	nua3500_io_setup();
+}
+
+static uint32_t nua3500_get_spsr_for_bl32_entry(void)
+{
+	return 0;
+}
+
+static uint32_t nua3500_get_spsr_for_bl33_entry(void)
+{
+	unsigned int mode;
+	uint32_t spsr;
+
+	/* Figure out what mode we enter the non-secure world in */
+	mode = el_implemented(2) ? MODE_EL2 : MODE_EL1;
+
+	/*
+	 * TODO: Consider the possibility of specifying the SPSR in
+	 * the FIP ToC and allowing the platform to have a say as
+	 * well.
+	 */
+	spsr = SPSR_64(mode, MODE_SP_ELX, DISABLE_ALL_EXCEPTIONS);
+	return spsr;
+}
+
+/*******************************************************************************
+ * This function can be used by the platforms to update/use image
+ * information for given `image_id`.
+ ******************************************************************************/
+int bl2_plat_handle_post_image_load(unsigned int image_id)
+{
+	int err = 0;
+	bl_mem_params_node_t *bl_mem_params = get_bl_mem_params_node(image_id);
+	bl_mem_params_node_t *hw_cfg_mem_params = NULL;
+
+	bl_mem_params_node_t *pager_mem_params;
+	bl_mem_params_node_t *paged_mem_params;
+
+	assert(bl_mem_params != NULL);
+
+	switch (image_id) {
+	case BL32_IMAGE_ID:
+		pager_mem_params = get_bl_mem_params_node(BL32_EXTRA1_IMAGE_ID);
+		assert(pager_mem_params);
+
+		paged_mem_params = get_bl_mem_params_node(BL32_EXTRA2_IMAGE_ID);
+		assert(paged_mem_params);
+
+		err = parse_optee_header(&bl_mem_params->ep_info,
+				&pager_mem_params->image_info,
+				&paged_mem_params->image_info);
+		if (err != 0) {
+			WARN("OPTEE header parse error.\n");
+		}
+
+		/*
+		 * When ATF loads the DTB the address of the DTB is passed in
+		 * arg2, if an hw config image is present use the base address
+		 * as DTB address an pass it as arg2
+		 */
+		hw_cfg_mem_params = get_bl_mem_params_node(HW_CONFIG_ID);
+
+		bl_mem_params->ep_info.args.arg0 = bl_mem_params->ep_info.args.arg1;
+		bl_mem_params->ep_info.args.arg1 = 0;
+		if (hw_cfg_mem_params)
+			bl_mem_params->ep_info.args.arg2 = hw_cfg_mem_params->image_info.image_base;
+		else
+			bl_mem_params->ep_info.args.arg2 = 0;
+		bl_mem_params->ep_info.args.arg3 = 0;
+
+		bl_mem_params->ep_info.spsr = nua3500_get_spsr_for_bl32_entry();
+
+		break;
+
+	case BL33_IMAGE_ID:
+		/* BL33 expects to receive the primary CPU MPID (through r0) */
+		bl_mem_params->ep_info.args.arg0 = 0xffff & read_mpidr();
+		bl_mem_params->ep_info.spsr = nua3500_get_spsr_for_bl33_entry();
+		break;
+
+	default:
+		/* Do nothing in default case */
+		break;
+	}
+
+	return err;
+}
+
+

@@ -1,0 +1,37 @@
+NUVOTON NUA3500 
+=================
+
+Trusted Firmware-A supports Nuvoton ARM SoC AARCH64 fields.
+nua3500: dual-core Cortex-A35
+
+
+Boot Sequence
+-------------
+
+Bootrom -> BL2 (compiled with BL2_AT_EL3) -> BL31 -> OP-TEE -> BL31 --> BL33(u-boot)
+
+How to build
+------------
+
+Build Procedure
+~~~~~~~~~~~~~~~
+
+-  Prepare AARCH64 toolchain.
+
+-  Build optee (BL32) and u-boot (BL33) firstly, and get binary images: tee-pager_v2.bin and u-boot.bin
+
+-  Build TF-A
+
+   Build bl2 and bl31:
+
+   .. code:: shell
+
+       CROSS_COMPILE=aarch64-linux-gnu- make PLAT=nua3500 bl2 bl31
+
+How to deploy
+-------------
+
+Both upstream U-Boot and OPTEE projects contain instructions on where
+to put the built images during their respective build process.
+So after successfully building TF-A just follow their build instructions
+to continue.
