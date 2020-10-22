@@ -104,10 +104,6 @@
    domains */
 #define ARM_LOCAL_STATE_OFF	U(2)
 
-#define ARM_DRAM1_BASE			ULL(0x80000000)
-#define ARM_DRAM1_SIZE			ULL(0x01000000)
-#define ARM_DRAM1_END			(ARM_DRAM1_BASE + ARM_DRAM1_SIZE - 1)
-
 /* The first 4KB of Trusted SRAM are used as shared memory */
 #define ARM_TRUSTED_SRAM_BASE		UL(0x28000000)
 #define ARM_SHARED_RAM_BASE		ARM_TRUSTED_SRAM_BASE
@@ -126,40 +122,10 @@
  */
 #define CACHE_WRITEBACK_GRANULE		(U(1) << ARM_CACHE_WRITEBACK_SHIFT)
 
-/*
- * To enable FW_CONFIG to be loaded by BL1, define the corresponding base
- * and limit. Leave enough space of BL2 meminfo.
- */
-#define ARM_FW_CONFIG_BASE		(ARM_BL_RAM_BASE + sizeof(meminfo_t))
-#define ARM_FW_CONFIG_LIMIT		(ARM_BL_RAM_BASE + PAGE_SIZE)
-
-/*
- * Boot parameters passed from BL2 to BL31/BL32 are stored here
- */
-#define ARM_BL2_MEM_DESC_BASE		ARM_FW_CONFIG_LIMIT
-#define ARM_BL2_MEM_DESC_LIMIT		(ARM_BL2_MEM_DESC_BASE + (PAGE_SIZE / 2U))
-
-
-/*
- * If SEPARATE_CODE_AND_RODATA=1 we define a region for each section
- * otherwise one region is defined containing both.
- */
-#if SEPARATE_CODE_AND_RODATA
-#define ARM_MAP_BL_RO			MAP_REGION_FLAT(			\
-						BL_CODE_BASE,			\
-						BL_CODE_END - BL_CODE_BASE,	\
-						MT_CODE | MT_SECURE),		\
-					MAP_REGION_FLAT(			\
-						BL_RO_DATA_BASE,		\
-						BL_RO_DATA_END			\
-							- BL_RO_DATA_BASE,	\
-						MT_RO_DATA | MT_SECURE)
-#else
 #define ARM_MAP_BL_RO			MAP_REGION_FLAT(			\
 						BL_CODE_BASE,			\
 						BL_CODE_END - BL_CODE_BASE,	\
 						MT_CODE | MT_SECURE)
-#endif
 
 /* Priority levels for ARM platforms */
 #define PLAT_RAS_PRI			0x10
@@ -193,59 +159,18 @@
 
 #define PLAT_ARM_TRUSTED_SRAM_SIZE	UL(0x00040000)	/* 256 KB */
 
-#define PLAT_ARM_TRUSTED_ROM_BASE	UL(0x00000000)
-#define PLAT_ARM_TRUSTED_ROM_SIZE	UL(0x00020000)	/* 128 KB */
-
-#define PLAT_ARM_TRUSTED_DRAM_BASE	UL(0x81000000)
-#define PLAT_ARM_TRUSTED_DRAM_SIZE	UL(0x00400000)	/* 1 GB */
-
-#define PLAT_ARM_DRAM2_BASE		ULL(0x80000000)
-#define PLAT_ARM_DRAM2_SIZE		UL(0x01000000)
-
 /*
  * Load address of BL33 for this platform port
  */
 #define PLAT_ARM_NS_IMAGE_BASE		UL(0x80000000)	/* TBD */
 
-
 /*
  * PLAT_ARM_MMAP_ENTRIES depends on the number of entries in the
  * plat_arm_mmap array defined for each BL stage.
  */
-#if defined(IMAGE_BL31)
-# if ENABLE_SPM
-#  define PLAT_ARM_MMAP_ENTRIES		9
-#  define MAX_XLAT_TABLES		9
-#  define PLAT_SP_IMAGE_MMAP_REGIONS	30
-#  define PLAT_SP_IMAGE_MAX_XLAT_TABLES	10
-# else
-#  define PLAT_ARM_MMAP_ENTRIES		8
-#  define MAX_XLAT_TABLES		5
-# endif
-#else
-# define PLAT_ARM_MMAP_ENTRIES		12
-# define MAX_XLAT_TABLES		6
-#endif
+#define PLAT_ARM_MMAP_ENTRIES		8
+#define MAX_XLAT_TABLES			5
 
-/*
- * Since BL31 NOBITS overlays BL2 and BL1-RW, PLAT_ARM_MAX_BL31_SIZE is
- * calculated using the current BL31 PROGBITS debug size plus the sizes of
- * BL2 and BL1-RW
- */
-#if ENABLE_SPM && !SPM_MM
-#define PLAT_ARM_MAX_BL31_SIZE		UL(0x60000)
-#else
-#define PLAT_ARM_MAX_BL31_SIZE		UL(0x3B000)
-#endif
-
-#ifndef __aarch64__
-/*
- * Since BL32 NOBITS overlays BL2 and BL1-RW, PLAT_ARM_MAX_BL32_SIZE is
- * calculated using the current SP_MIN PROGBITS debug size plus the sizes of
- * BL2 and BL1-RW
- */
-# define PLAT_ARM_MAX_BL32_SIZE		UL(0x3B000)
-#endif
 
 /*
  * Size of cacheable stacks
@@ -261,11 +186,6 @@
 #elif defined(IMAGE_BL32)
 # define PLATFORM_STACK_SIZE		UL(0x440)
 #endif
-
-
-/* Reserve the last block of flash for PSCI MEM PROTECT flag */
-//#define PLAT_ARM_FIP_BASE		UL(0x0)	/* TBD */
-//#define PLAT_ARM_FIP_MAX_SIZE		UL(0x0)	/* TBD */
 
 
 #define PLAT_ARM_CRASH_UART_BASE	UL(0x40700000)

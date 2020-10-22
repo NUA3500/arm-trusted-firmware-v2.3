@@ -51,11 +51,6 @@ void bl2_el3_plat_arch_setup(void)
 			BL32_LIMIT - BL32_BASE,
 			MT_MEMORY | MT_RW | MT_SECURE);
 
-	/* Prevent corruption of preloaded Device Tree */
-	mmap_add_region(DTB_BASE, DTB_BASE,
-			DTB_LIMIT - DTB_BASE,
-			MT_RO_DATA | MT_SECURE);
-
 	/* config MMC */
 	configure_mmu();
 

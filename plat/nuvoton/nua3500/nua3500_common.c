@@ -94,7 +94,7 @@ void __init nua3500_config_setup(void)
 
 	console_nua3500_register(PLAT_ARM_CRASH_UART_BASE, PLAT_ARM_CRASH_UART_CLK_IN_HZ, ARM_CONSOLE_BAUDRATE, &nua3500_console);
 
-	INFO("\n\nnua3500 config setup\n");
+	INFO("nua3500 config setup\n");
 
 }
 
@@ -152,7 +152,15 @@ void plat_nua3500_init(void)
 	outp32((void *)SYS_RLKTZS, 0x16);
 	outp32((void *)SYS_RLKTZS, 0x88);
 
+	/* enable SSPCC clock */
 	outp32((void *)CLK_APBCLK2, inp32((void *)CLK_APBCLK2) | 0x8);
+
+	/* set SSPCC: Assign NAND/SDH0/SDH1 to TZNS */
+	outp32((void *)SSPCC_PSSET1, inp32((void *)SSPCC_PSSET1) | 0x150000);
+
+	/* set SSPCC: Assign QSPI0 to TZNS */
+	outp32((void *)SSPCC_PSSET6, inp32((void *)SSPCC_PSSET6) | 0x10000);
+
 	/* set SSPCC: Assign UART0 to TZNS */
 	outp32((void *)SSPCC_PSSET7, inp32((void *)SSPCC_PSSET7) | 0x1);
 

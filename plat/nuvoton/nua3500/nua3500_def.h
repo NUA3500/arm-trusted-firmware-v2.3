@@ -38,33 +38,30 @@
 /*******************************************************************************
  * NUA3500 memory map related constants
  ******************************************************************************/
-#define NUA3500_ROM_BASE		U(0x5FFC0000)
-#define NUA3500_ROM_SIZE		U(0x00020000)
+//#define NUA3500_ROM_BASE		U(0x5FFC0000)
+//#define NUA3500_ROM_SIZE		U(0x00020000)
 
 #define NUA3500_SRAM0_BASE		U(0x24000000)
 #define NUA3500_SRAM0_SIZE		U(0x00040000)
 
-#define NUA3500_SRAM1_BASE		U(0x28027000)
-#define NUA3500_SRAM1_SIZE		U(0x00010000)
+#define NUA3500_SRAM1_BASE		U(0x28000000)
+#define NUA3500_SRAM1_SIZE		U(0x00040000)
 
 /* DDR configuration */
 #define NUA3500_DDR_BASE		U(0x80000000)
-#define NUA3500_DDR_MAX_SIZE		U(0x01000000)
+#define NUA3500_DDR_MAX_SIZE		U(0x10000000)	/* 256MB */
 
-#define NUA3500_BL2_BASE		U(0x28020000)
-#define NUA3500_BL2_SIZE		U(0x00018000)
+#define NUA3500_BL2_BASE		U(0x28000000)
+#define NUA3500_BL2_SIZE		U(0x00010000)
 
-#define NUA3500_BL31_BASE		U(0xb0000000)
-#define NUA3500_BL31_SIZE		U(0x00080000)
+#define NUA3500_BL31_BASE		U(0x28010000)
+#define NUA3500_BL31_SIZE		U(0x00020000)
 
-#define NUA3500_BL32_BASE		U(0xbe000000)
-#define NUA3500_BL32_SIZE		U(0x02000000)
+#define NUA3500_BL32_BASE		U(0x8f800000)
+#define NUA3500_BL32_SIZE		U(0x00200000)
 
 #define NUA3500_BL33_BASE		U(0x80e00000)
 #define NUA3500_BL33_SIZE		U(0x01000000)
-
-#define NUA3500_DTB_BASE		U(0x8f000000)
-#define NUA3500_DTB_SIZE		U(0x8000)
 
 #define BL2_BASE			NUA3500_BL2_BASE
 #define BL2_LIMIT			(NUA3500_BL2_BASE + NUA3500_BL2_SIZE)
@@ -88,20 +85,14 @@
 /*******************************************************************************
  * nua3500 device/io map related constants (used for MMU)
  ******************************************************************************/
-#define NUA3500_DEVICE0_BASE		U(0xb0000000)
-#define NUA3500_DEVICE0_SIZE		U(0x10000000)
-
 #define NUA3500_REG_BASE		U(0x40400000)
 #define NUA3500_REG_SIZE		U(0x20000000)
 
 #define NUA3500_DRAM_BASE		U(0x80000000)
-#define NUA3500_DRAM_SIZE		U(0x10000000)
+#define NUA3500_DRAM_SIZE		U(0x0f800000)
 
-#define NUA3500_DRAM_S_BASE		U(0x90000000)
-#define NUA3500_DRAM_S_SIZE		U(0x10000000)
-
-#define NUA3500_DEVICE3_BASE		U(0xC0000000)
-#define NUA3500_DEVICE3_SIZE		U(0x10000000)
+#define NUA3500_DRAM_S_BASE		U(0x8f800000)
+#define NUA3500_DRAM_S_SIZE		U(0x00800000)
 
 /* Non-volatile counters */
 #define TRUSTED_NVCTR_BASE		UL(0x7fe70000)
@@ -181,6 +172,10 @@
 #define CLK_BA          0x40460200
 
 /* sys registers */
+#define SYS_PWRONOTP	U(0x40460004)
+#define SYS_PWRONPIN	U(0x40460008)
+#define SYS_CHIPCFG	U(0x404601F4)
+
 #define SYS_GPE_MFPH	U(0x404600A4)
 
 #define SYS_RLKTZS	U(0x404601A0)
@@ -195,6 +190,8 @@
 #define CLK_CLKSEL2	U(0x40460220)
 
 /* sspcc registers */
+#define SSPCC_PSSET1	U(0x404F0004)
+#define SSPCC_PSSET6	U(0x404F0018)
 #define SSPCC_PSSET7	U(0x404F001C)
 
 #define outp32(addr,data) (*(volatile int*)(addr) = (data))

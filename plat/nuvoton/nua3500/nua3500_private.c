@@ -17,12 +17,6 @@
 					MT_RW | \
 					MT_SECURE )
 
-#define MAP_DEVICE0	MAP_REGION_FLAT(NUA3500_DEVICE0_BASE, \
-					NUA3500_DEVICE0_SIZE, \
-					MT_MEMORY | \
-					MT_RW | \
-					MT_SECURE)
-
 #define MAP_DEVICE1	MAP_REGION_FLAT(NUA3500_REG_BASE, \
 					NUA3500_REG_SIZE, \
 					MT_DEVICE | \
@@ -46,7 +40,6 @@ const mmap_region_t nua3500_mmap[] = {
 	MAP_DEVICE1,
 	MAP_DEVICE2,
 	MAP_DEVICE3,
-	MAP_DEVICE0,
 	{0}
 };
 
