@@ -97,6 +97,8 @@ PLAT_BL_COMMON_SOURCES	:=	common/fdt_wrappers.c				\
 				plat/nuvoton/nua3500/nua3500_common.c		\
 				plat/nuvoton/nua3500/drivers/nua3500_ddr.c	\
 				plat/nuvoton/nua3500/nua3500_private.c		\
+				plat/nuvoton/nua3500/drivers/nua3500_crypto.c	\
+				plat/nuvoton/nua3500/drivers/tsi_cmd.c	        \
 
 include lib/xlat_tables_v2/xlat_tables.mk
 PLAT_BL_COMMON_SOURCES	+=	${XLAT_TABLES_LIB_SRCS}

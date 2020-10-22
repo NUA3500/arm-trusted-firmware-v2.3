@@ -100,8 +100,7 @@
 #define ARM_LOCAL_STATE_RUN	U(0)
 /* Local power state for retention. Valid only for CPU power domains */
 #define ARM_LOCAL_STATE_RET	U(1)
-/* Local power state for OFF/power-down. Valid for CPU and cluster power
-   domains */
+/* Local power state for OFF/power-down. Valid for CPU and cluster power domains */
 #define ARM_LOCAL_STATE_OFF	U(2)
 
 /* The first 4KB of Trusted SRAM are used as shared memory */

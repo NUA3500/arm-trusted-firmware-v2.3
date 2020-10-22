@@ -38,8 +38,8 @@
 /*******************************************************************************
  * NUA3500 memory map related constants
  ******************************************************************************/
-//#define NUA3500_ROM_BASE		U(0x5FFC0000)
-//#define NUA3500_ROM_SIZE		U(0x00020000)
+//#define NUA3500_ROM_BASE              U(0x5FFC0000)
+//#define NUA3500_ROM_SIZE              U(0x00020000)
 
 #define NUA3500_SRAM0_BASE		U(0x24000000)
 #define NUA3500_SRAM0_SIZE		U(0x00040000)
@@ -60,7 +60,7 @@
 #define NUA3500_BL32_BASE		U(0x8f800000)
 #define NUA3500_BL32_SIZE		U(0x00200000)
 
-#define NUA3500_BL33_BASE		U(0x80e00000)
+#define NUA3500_BL33_BASE		U(0x80E00000)
 #define NUA3500_BL33_SIZE		U(0x01000000)
 
 #define BL2_BASE			NUA3500_BL2_BASE
@@ -80,7 +80,6 @@
 
 #define BL33_BASE			NUA3500_BL33_BASE
 #define BL33_LIMIT			(NUA3500_BL33_BASE + NUA3500_BL33_SIZE)
-
 
 /*******************************************************************************
  * nua3500 device/io map related constants (used for MMU)
@@ -131,14 +130,13 @@
  ******************************************************************************/
 /* Base NUA3500 compatible GIC memory map */
 #define BASE_GICD_BASE			UL(0x50801000)
-#define BASE_GICR_BASE			0       /* no GICR in GIC-400 */
+#define BASE_GICR_BASE			0	/* no GICR in GIC-400 */
 #define BASE_GICC_BASE			UL(0x50802000)
 #define BASE_GICH_BASE			UL(0x50804000)
 #define BASE_GICV_BASE			UL(0x50806000)
 
 #define NUA3500_IRQ_TZ_WDOG			39	/* wdt0 */
 #define NUA3500_IRQ_SEC_SYS_TIMER		79	/* tmr0? */
-
 
 /*******************************************************************************
  * NUA3500 TZC (TZ400)
@@ -161,10 +159,9 @@
  * platforms do not have secure NVRAM. Real systems that provided MEM_PROTECT
  * support must use a secure NVRAM to store the PSCI MEM_PROTECT definitions.
  */
-/*#define PLAT_ARM_MEM_PROT_ADDR		(V2M_FLASH0_BASE + \
-					 V2M_FLASH0_SIZE - V2M_FLASH_BLOCK_SIZE)
-*/
-
+/*#define PLAT_ARM_MEM_PROT_ADDR	(V2M_FLASH0_BASE + V2M_FLASH0_SIZE \
+ *					 - V2M_FLASH_BLOCK_SIZE)
+ */
 
 /*************************************/
 #define UMCTL2_BA       U(0x404d0000)
@@ -194,7 +191,13 @@
 #define SSPCC_PSSET6	U(0x404F0018)
 #define SSPCC_PSSET7	U(0x404F001C)
 
-#define outp32(addr,data) (*(volatile int*)(addr) = (data))
-#define inp32(addr) (*(volatile int*)(addr))
+#define CRYPTO_BASE	U(0x40300000)
+#define TSI_SYS_BASE	U(0x40360000)
+#define TSI_CLK_BASE	U(0x40360200)
+#define WHC0_BASE	U(0x403A0000)
+#define WHC1_BASE	U(0x503B0000)
+
+#define outp32(addr, data) (*(volatile uint32_t *)((uint64_t)(addr))) = (data)
+#define inp32(addr) (*(volatile uint32_t *)((uint64_t)(addr)))
 
 #endif /* NUA3500_DEF_H */
