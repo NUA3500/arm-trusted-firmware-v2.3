@@ -20,57 +20,61 @@
  ******************************************************************************/
 static bl_mem_params_node_t bl2_mem_params_descs[] = {
 	{
-	    .image_id = BL31_IMAGE_ID,
+		.image_id = BL31_IMAGE_ID,
 
-	    SET_STATIC_PARAM_HEAD(ep_info, PARAM_EP,
-		    VERSION_2, entry_point_info_t,
-		    SECURE | EXECUTABLE | EP_FIRST_EXE),
-	    .ep_info.pc = BL31_BASE,
+		SET_STATIC_PARAM_HEAD(ep_info, PARAM_EP,
+			VERSION_2, entry_point_info_t,
+			SECURE | EXECUTABLE | EP_FIRST_EXE),
 
-	    .ep_info.spsr = SPSR_64(MODE_EL3, MODE_SP_ELX,
-		    DISABLE_ALL_EXCEPTIONS),
+		.ep_info.pc = BL31_BASE,
+		.ep_info.spsr = SPSR_64(MODE_EL3, MODE_SP_ELX,
+			DISABLE_ALL_EXCEPTIONS),
 
-	    SET_STATIC_PARAM_HEAD(image_info, PARAM_EP,
-		    VERSION_2, image_info_t, IMAGE_ATTRIB_PLAT_SETUP),
-	    .image_info.image_base = BL31_BASE,
-	    .image_info.image_max_size = BL31_LIMIT - BL31_BASE,
+		SET_STATIC_PARAM_HEAD(image_info, PARAM_EP,
+			VERSION_2, image_info_t, IMAGE_ATTRIB_PLAT_SETUP),
 
-	    .next_handoff_image_id = BL32_IMAGE_ID,
+		.image_info.image_base = BL31_BASE,
+		.image_info.image_max_size = BL31_LIMIT - BL31_BASE,
+
+		.next_handoff_image_id = BL32_IMAGE_ID,
 	},
 	/* Fill BL32 related information */
 	{
 		.image_id = BL32_IMAGE_ID,
 
 		SET_STATIC_PARAM_HEAD(ep_info, PARAM_EP,
-				      VERSION_2, entry_point_info_t,
-				      SECURE | EXECUTABLE ),
+			VERSION_2, entry_point_info_t,
+			SECURE | EXECUTABLE ),
 
 		.ep_info.pc = BL32_BASE,
 
 		SET_STATIC_PARAM_HEAD(image_info, PARAM_EP,
-				      VERSION_2, image_info_t,
-				      0),
+			VERSION_2, image_info_t,
+			0),
+
 		.image_info.image_base = BL32_BASE,
 		.image_info.image_max_size = BL32_LIMIT - BL32_BASE,
+
 		.next_handoff_image_id = BL33_IMAGE_ID,
 	},
-#if 1
+
 	/*
 	 * Fill BL32 external 1 related information.
 	 * A typical use for extra1 image is with OP-TEE where it is the pager image.
 	 */
 	{
-	    .image_id = BL32_EXTRA1_IMAGE_ID,
+		.image_id = BL32_EXTRA1_IMAGE_ID,
 
-	    SET_STATIC_PARAM_HEAD(ep_info, PARAM_EP,
-		    VERSION_2, entry_point_info_t, SECURE | NON_EXECUTABLE),
+		SET_STATIC_PARAM_HEAD(ep_info, PARAM_EP,
+			VERSION_2, entry_point_info_t, SECURE | NON_EXECUTABLE),
 
-	    SET_STATIC_PARAM_HEAD(image_info, PARAM_EP,
-		    VERSION_2, image_info_t, IMAGE_ATTRIB_SKIP_LOADING),
-	    .image_info.image_base = BL32_BASE,
-	    .image_info.image_max_size = BL32_LIMIT - BL32_BASE,
+		SET_STATIC_PARAM_HEAD(image_info, PARAM_EP,
+			VERSION_2, image_info_t, IMAGE_ATTRIB_SKIP_LOADING),
 
-	    .next_handoff_image_id = INVALID_IMAGE_ID,
+		.image_info.image_base = BL32_BASE,
+		.image_info.image_max_size = BL32_LIMIT - BL32_BASE,
+
+		.next_handoff_image_id = INVALID_IMAGE_ID,
 	},
 
 	/*
@@ -78,29 +82,29 @@ static bl_mem_params_node_t bl2_mem_params_descs[] = {
 	 * A typical use for extra2 image is with OP-TEE where it is the paged image.
 	 */
 	{
-	    .image_id = BL32_EXTRA2_IMAGE_ID,
+		.image_id = BL32_EXTRA2_IMAGE_ID,
 
-	    SET_STATIC_PARAM_HEAD(ep_info, PARAM_EP,
-		    VERSION_2, entry_point_info_t, SECURE | NON_EXECUTABLE),
+		SET_STATIC_PARAM_HEAD(ep_info, PARAM_EP,
+			VERSION_2, entry_point_info_t, SECURE | NON_EXECUTABLE),
 
-	    SET_STATIC_PARAM_HEAD(image_info, PARAM_EP,
-		    VERSION_2, image_info_t, IMAGE_ATTRIB_SKIP_LOADING),
+		SET_STATIC_PARAM_HEAD(image_info, PARAM_EP,
+			VERSION_2, image_info_t, IMAGE_ATTRIB_SKIP_LOADING),
 
-	    .next_handoff_image_id = INVALID_IMAGE_ID,
+		.next_handoff_image_id = INVALID_IMAGE_ID,
 	},
-#endif
+
 	/* Fill BL33 related information */
 	{
 		.image_id = BL33_IMAGE_ID,
 
 		SET_STATIC_PARAM_HEAD(ep_info, PARAM_EP,
-				      VERSION_2, entry_point_info_t,
-				      NON_SECURE | EXECUTABLE),
+			VERSION_2, entry_point_info_t,
+			NON_SECURE | EXECUTABLE),
 
 		.ep_info.pc = BL33_BASE,
 
 		SET_STATIC_PARAM_HEAD(image_info, PARAM_EP,
-				      VERSION_2, image_info_t, 0),
+			VERSION_2, image_info_t, 0),
 
 		.image_info.image_base = BL33_BASE,
 		.image_info.image_max_size = BL33_LIMIT - BL33_BASE,

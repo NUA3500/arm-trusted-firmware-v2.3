@@ -42,14 +42,10 @@ void bl2_el3_plat_arch_setup(void)
 			BL_CODE_END - BL_CODE_BASE,
 			MT_CODE | MT_SECURE);
 
-	/* Prevent corruption of preloaded BL31 */
-	mmap_add_region(BL31_BASE, BL31_BASE,
-			BL31_LIMIT - BL31_BASE,
+	/* Prevent corruption of preloaded Device Tree */
+	mmap_add_region(DTB_BASE, DTB_BASE,
+			DTB_LIMIT - DTB_BASE,
 			MT_RO_DATA | MT_SECURE);
-
-	mmap_add_region(BL32_BASE, BL32_BASE,
-			BL32_LIMIT - BL32_BASE,
-			MT_MEMORY | MT_RW | MT_SECURE);
 
 	/* config MMC */
 	configure_mmu();
@@ -59,7 +55,6 @@ void bl2_el3_plat_arch_setup(void)
 	/* TODO: clock initial ? */
 
 	/* TODO: system config initial, power? */
-
 
 	/* TODO: doing ECC and AES? */
 #if 0
@@ -101,10 +96,9 @@ int bl2_plat_handle_post_image_load(unsigned int image_id)
 {
 	int err = 0;
 	bl_mem_params_node_t *bl_mem_params = get_bl_mem_params_node(image_id);
-	bl_mem_params_node_t *hw_cfg_mem_params = NULL;
 
 	bl_mem_params_node_t *pager_mem_params;
-	bl_mem_params_node_t *paged_mem_params;
+	bl_mem_params_node_t *paged_mem_params = NULL;
 
 	assert(bl_mem_params != NULL);
 
@@ -128,14 +122,9 @@ int bl2_plat_handle_post_image_load(unsigned int image_id)
 		 * arg2, if an hw config image is present use the base address
 		 * as DTB address an pass it as arg2
 		 */
-		hw_cfg_mem_params = get_bl_mem_params_node(HW_CONFIG_ID);
-
 		bl_mem_params->ep_info.args.arg0 = bl_mem_params->ep_info.args.arg1;
 		bl_mem_params->ep_info.args.arg1 = 0;
-		if (hw_cfg_mem_params)
-			bl_mem_params->ep_info.args.arg2 = hw_cfg_mem_params->image_info.image_base;
-		else
-			bl_mem_params->ep_info.args.arg2 = 0;
+		bl_mem_params->ep_info.args.arg2 = 0;
 		bl_mem_params->ep_info.args.arg3 = 0;
 
 		bl_mem_params->ep_info.spsr = nua3500_get_spsr_for_bl32_entry();

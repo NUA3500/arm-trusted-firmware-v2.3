@@ -8,7 +8,7 @@
 #include <asm_macros.S>
 #include <assert_macros.S>
 #include <console_macros.S>
-#include <drivers/nuvoton/uart/uart_nua3500.h>
+#include "uart_nua3500.h"
 
 	/*
 	 * "core" functions are low-level implementations that don't require

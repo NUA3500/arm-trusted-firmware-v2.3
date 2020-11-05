@@ -52,9 +52,12 @@
 #define NUA3500_DDR_MAX_SIZE		U(0x10000000)	/* 256MB */
 
 #define NUA3500_BL2_BASE		U(0x28000000)
-#define NUA3500_BL2_SIZE		U(0x00010000)
+#define NUA3500_BL2_SIZE		U(0x00018000)
 
-#define NUA3500_BL31_BASE		U(0x28010000)
+#define NUA3500_DTB_BASE		U(0x28018000)
+#define NUA3500_DTB_SIZE		U(0x00001000)
+
+#define NUA3500_BL31_BASE		U(0x28020000)
 #define NUA3500_BL31_SIZE		U(0x00020000)
 
 #define NUA3500_BL32_BASE		U(0x8f800000)
@@ -69,6 +72,10 @@
 #define DTB_BASE			NUA3500_DTB_BASE
 #define DTB_LIMIT			(NUA3500_DTB_BASE + NUA3500_DTB_SIZE)
 
+#define NUA3500_FIP_SIZE		0x00100000
+#define NUA3500_FIP_BASE		(NUA3500_DDR_BASE)
+#define NUA3500_FIP_LIMIT		(NUA3500_FIP_BASE + NUA3500_FIP_SIZE)
+
 /*
  * Put BL31 at the bottom of TZC secured DRAM
  */
@@ -81,10 +88,13 @@
 #define BL33_BASE			NUA3500_BL33_BASE
 #define BL33_LIMIT			(NUA3500_BL33_BASE + NUA3500_BL33_SIZE)
 
+#define DTB_BASE			NUA3500_DTB_BASE
+#define DTB_LIMIT			(NUA3500_DTB_BASE + NUA3500_DTB_SIZE)
+
 /*******************************************************************************
  * nua3500 device/io map related constants (used for MMU)
  ******************************************************************************/
-#define NUA3500_REG_BASE		U(0x40400000)
+#define NUA3500_REG_BASE		U(0x40000000)
 #define NUA3500_REG_SIZE		U(0x20000000)
 
 #define NUA3500_DRAM_BASE		U(0x80000000)
@@ -171,26 +181,41 @@
 /* sys registers */
 #define SYS_PWRONOTP	U(0x40460004)
 #define SYS_PWRONPIN	U(0x40460008)
+#define SYS_IPRST0	U(0x40460020)
+#define SYS_IPRST1	U(0x40460024)
 #define SYS_CHIPCFG	U(0x404601F4)
 
+#define SYS_GPA_MFPL	U(0x40460080)
+#define SYS_GPA_MFPH	U(0x40460084)
+#define SYS_GPC_MFPL	U(0x40460090)
+#define SYS_GPC_MFPH	U(0x40460094)
+#define SYS_GPD_MFPL	U(0x40460098)
 #define SYS_GPE_MFPH	U(0x404600A4)
+#define SYS_GPJ_MFPL	U(0x404600C8)
+#define SYS_GPJ_MFPH	U(0x404600CC)
 
 #define SYS_RLKTZS	U(0x404601A0)
 #define SYS_RLKTZNS	U(0x404601A4)
 
 /* clock registers */
+#define CLK_SYSCLK0	U(0x40460204)
+#define CLK_SYSCLK1	U(0x40460208)
 #define CLK_APBCLK0	U(0x4046020C)
 #define CLK_APBCLK1	U(0x40460210)
 #define CLK_APBCLK2	U(0x40460214)
 #define CLK_CLKSEL0	U(0x40460218)
 #define CLK_CLKSEL1	U(0x4046021C)
 #define CLK_CLKSEL2	U(0x40460220)
+#define CLK_CLKDIV1	U(0x40460230)
 
 /* sspcc registers */
 #define SSPCC_PSSET1	U(0x404F0004)
+#define SSPCC_PSSET3	U(0x404F000C)
 #define SSPCC_PSSET6	U(0x404F0018)
 #define SSPCC_PSSET7	U(0x404F001C)
+#define SSPCC_PSSET11	U(0x404F002C)
 
+/* crypto define */
 #define CRYPTO_BASE	U(0x40300000)
 #define TSI_SYS_BASE	U(0x40360000)
 #define TSI_CLK_BASE	U(0x40360200)
@@ -199,5 +224,6 @@
 
 #define outp32(addr, data) (*(volatile uint32_t *)((uint64_t)(addr))) = (data)
 #define inp32(addr) (*(volatile uint32_t *)((uint64_t)(addr)))
+#define inp8(addr) (*(volatile uint8_t *)((uint64_t)(addr)))
 
 #endif /* NUA3500_DEF_H */

@@ -22,8 +22,6 @@
 
 #define LIB_NAME		"NUA3500 Crypto"
 
-#define CLK_SYSCLK1		(CLK_BA+0x08)
-
 static int HAVE_TSI;
 
 typedef struct e_curve_t {

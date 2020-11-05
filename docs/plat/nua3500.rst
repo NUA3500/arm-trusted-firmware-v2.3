@@ -67,7 +67,18 @@ Build Procedure
 
    .. code:: shell
 
-       CROSS_COMPILE=aarch64-linux-gnu- make PLAT=nua3500 bl2 bl31
+       CROSS_COMPILE=aarch64-linux-gnu- make PLAT=nua3500  (bl2, bl31, DTB)
+
+       CROSS_COMPILE=aarch64-linux-gnu- make PLAT=nua3500 fiptool
+
+	./tools/fiptool/fiptool create \
+		--soc-fw build/nua3500/release/bl31.bin \
+		--tos-fw fiptool_images/tee-header_v2.bin \
+		--tos-fw-extra1 fiptool_images/tee-pager_v2.bin \
+		--nt-fw fiptool_images/u-boot.bin \
+		fip.bin
+
+
 
 How to deploy
 -------------

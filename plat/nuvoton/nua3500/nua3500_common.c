@@ -85,10 +85,16 @@ static console_t nua3500_console = {
  ******************************************************************************/
 void __init nua3500_config_setup(void)
 {
+	/* unlock */
+	outp32((void *)SYS_RLKTZS, 0x59);
+	outp32((void *)SYS_RLKTZS, 0x16);
+	outp32((void *)SYS_RLKTZS, 0x88);
+
 
 	/* Enable UART0 clock */
 	outp32((void *)CLK_APBCLK0, inp32((void *)CLK_APBCLK0) | (1 << 12));
 	outp32((void *)CLK_CLKSEL2, inp32((void *)CLK_CLKSEL2) & ~(3 << 16));
+	outp32((void *)CLK_CLKDIV1, inp32((void *)CLK_CLKDIV1) & ~(0xf << 16));
 	/* UART0 multi-function */
 	outp32((void *)SYS_GPE_MFPH, (inp32((void *)SYS_GPE_MFPH) & ~0xff000000) | 0x11000000);
 
@@ -158,11 +164,17 @@ void plat_nua3500_init(void)
 	/* set SSPCC: Assign NAND/SDH0/SDH1 to TZNS */
 	outp32((void *)SSPCC_PSSET1, inp32((void *)SSPCC_PSSET1) | 0x150000);
 
+	/* set SSPCC: Assign CRYPTO TZNS */
+	outp32((void *)SSPCC_PSSET3, inp32((void *)SSPCC_PSSET3) | 0x1);
+
 	/* set SSPCC: Assign QSPI0 to TZNS */
 	outp32((void *)SSPCC_PSSET6, inp32((void *)SSPCC_PSSET6) | 0x10000);
 
 	/* set SSPCC: Assign UART0 to TZNS */
 	outp32((void *)SSPCC_PSSET7, inp32((void *)SSPCC_PSSET7) | 0x1);
+
+	/* set SSPCC: Assign TRNG to TZNS */
+	outp32((void *)SSPCC_PSSET11, inp32((void *)SSPCC_PSSET11) | 0x40000);
 
 	/* lock */
 	outp32((void *)SYS_RLKTZS, 0);
