@@ -1,48 +1,36 @@
 /*
- * Copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
+ * Copyright (c) 2018-2019, ARM Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include <assert.h>
-#include <stdint.h>
-#include <string.h>
-
-#include <lib/mmio.h>
-
 #include <plat/common/platform.h>
-#include <platform_def.h>
-#include <tools_share/tbbr_oid.h>
 
-/*
- * Store a new non-volatile counter value.
- *
- * On some NUA3500 versions, the non-volatile counters are read-only so this
- * function will always fail.
- *
- * Return: 0 = success, Otherwise = error
- */
+extern char nua3500_rotpk_hash[], nua3500_rotpk_hash_end[];
+
+int plat_get_rotpk_info(void *cookie, void **key_ptr, unsigned int *key_len,
+			unsigned int *flags)
+{
+	*key_ptr = nua3500_rotpk_hash;
+	*key_len = nua3500_rotpk_hash_end - nua3500_rotpk_hash;
+	*flags = ROTPK_IS_HASH;
+
+	return 0;
+}
+
+int plat_get_nv_ctr(void *cookie, unsigned int *nv_ctr)
+{
+	*nv_ctr = 0;
+
+	return 0;
+}
+
 int plat_set_nv_ctr(void *cookie, unsigned int nv_ctr)
 {
-	const char *oid;
-	uintptr_t nv_ctr_addr;
+	return 1;
+}
 
-	assert(cookie != NULL);
-
-	oid = (const char *)cookie;
-	if (strcmp(oid, TRUSTED_FW_NVCOUNTER_OID) == 0) {
-		nv_ctr_addr = TFW_NVCTR_BASE;
-	} else if (strcmp(oid, NON_TRUSTED_FW_NVCOUNTER_OID) == 0) {
-		nv_ctr_addr = NTFW_CTR_BASE;
-	} else {
-		return 1;
-	}
-
-	mmio_write_32(nv_ctr_addr, nv_ctr);
-
-	/*
-	 * If the NUA3500 models a locked counter then its value cannot be updated
-	 * and the above write operation has been silently ignored.
-	 */
-	return (mmio_read_32(nv_ctr_addr) == nv_ctr) ? 0 : 1;
+int plat_get_mbedtls_heap(void **heap_addr, size_t *heap_size)
+{
+	return get_mbedtls_heap_helper(heap_addr, heap_size);
 }

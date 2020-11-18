@@ -76,7 +76,6 @@ static bl_mem_params_node_t bl2_mem_params_descs[] = {
 
 		.next_handoff_image_id = INVALID_IMAGE_ID,
 	},
-
 	/*
 	 * Fill BL32 external 2 related information.
 	 * A typical use for extra2 image is with OP-TEE where it is the paged image.

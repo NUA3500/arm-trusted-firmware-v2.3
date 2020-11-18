@@ -67,7 +67,38 @@ Build Procedure
 
    .. code:: shell
 
+   normal built command:
+
        CROSS_COMPILE=aarch64-linux-gnu- make PLAT=nua3500  (bl2, bl31, DTB)
+
+	CROSS_COMPILE=aarch64-linux-gnu- make PLAT=nua3500 \
+		NEED_BL31=yes bl31 NEED_BL32=yes BL32=fiptool_images/tee-header_v2.bin \
+		BL32_EXTRA1=fiptool_images/tee-pager_v2.bin BL33=fiptool_images/u-boot.bin \
+		all fip
+
+
+   enable TRUSTED_BOARD_BOOT
+
+	CROSS_COMPILE=aarch64-linux-gnu- make PLAT=nua3500 \
+		NEED_BL31=yes bl31 NEED_BL32=yes BL32=fiptool_images/tee-header_v2.bin \
+		BL32_EXTRA1=fiptool_images/tee-pager_v2.bin BL33=fiptool_images/u-boot.bin \
+		certificates all fip
+
+   tools:
+	./tools/cert_create/cert_create -n --rot-key "build/nua3500/release/rot_key.pem" \
+		--tfw-nvctr 0 \
+		--ntfw-nvctr 0 \
+		--trusted-key-cert fiptool_images/trusted-key-cert.key-crt \
+		--soc-fw=build/nua3500/release/bl31.bin \
+		--soc-fw-cert fiptool_images/trusted-boot-fw.crt \
+		--soc-fw-key-cert fiptool_images/trusted-boot-fw.key-crt \
+		--tos-fw fiptool_images/tee-header_v2.bin \
+		--tos-fw-cert fiptool_images/tee-header_v2.bin.crt \
+		--tos-fw-key-cert fiptool_images/tee-header_v2.bin.key-crt \
+		--tos-fw-extra1 fiptool_images/tee-pager_v2.bin \
+		--nt-fw fiptool_images/u-boot.bin \
+		--nt-fw-cert fiptool_images/u-boot.bin.crt \
+		--nt-fw-key-cert fiptool_images/u-boot.bin.key-crt
 
        CROSS_COMPILE=aarch64-linux-gnu- make PLAT=nua3500 fiptool
 
@@ -78,7 +109,18 @@ Build Procedure
 		--nt-fw fiptool_images/u-boot.bin \
 		fip.bin
 
-
+	./tools/fiptool/fiptool create \
+		--soc-fw build/nua3500/release/bl31.bin \
+		--tos-fw fiptool_images/tee-header_v2.bin \
+		--tos-fw-extra1 fiptool_images/tee-pager_v2.bin \
+		--nt-fw fiptool_images/u-boot.bin \
+		--soc-fw-key-cert fiptool_images/trusted-boot-fw.key-crt \
+		--tos-fw-cert fiptool_images/tee-header_v2.bin.crt \
+		--tos-fw-key-cert fiptool_images/tee-header_v2.bin.key-crt \
+		--nt-fw-cert fiptool_images/u-boot.bin.crt \
+		--nt-fw-key-cert fiptool_images/u-boot.bin.key-crt \
+		--trusted-key-cert fiptool_images/trusted-key-cert.key-crt \
+		fip.bin
 
 How to deploy
 -------------

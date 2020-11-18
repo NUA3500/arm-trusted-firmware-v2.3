@@ -13,12 +13,14 @@
 #include <drivers/arm/sp804_delay_timer.h>
 #include <drivers/generic_delay_timer.h>
 #include <lib/mmio.h>
+#include <libfdt.h>
 #include <lib/xlat_tables/xlat_tables_compat.h>
 #include <plat/arm/common/arm_config.h>
 #include <plat/arm/common/plat_arm.h>
 #include <plat/common/platform.h>
 #include <platform_def.h>
 #include <services/spm_mm_partition.h>
+#include <common/fdt_wrappers.h>
 
 #include "nua3500_private.h"
 
@@ -131,16 +133,6 @@ void nua3500_interconnect_disable(void)
 	}
 }
 
-#if TRUSTED_BOARD_BOOT
-int plat_get_mbedtls_heap(void **heap_addr, size_t *heap_size)
-{
-	assert(heap_addr != NULL);
-	assert(heap_size != NULL);
-
-	return arm_get_mbedtls_heap(heap_addr, heap_size);
-}
-#endif
-
 unsigned int plat_get_syscnt_freq2(void)
 {
 	return SYS_COUNTER_FREQ_IN_TICKS;
@@ -151,8 +143,29 @@ void nua3500_timer_init(void)
 	generic_delay_timer_init();
 }
 
+static void *fdt = (void *)(uintptr_t)NUA3500_DTB_BASE;
+
 void plat_nua3500_init(void)
 {
+	int value_len, count, i;
+	int node;
+	unsigned int cells[70 * 3];
+	unsigned int reg;
+
+	/* get device tree information */
+	if (fdt_check_header(fdt) < 0) {
+		WARN("device tree header check error.\n");
+	}
+
+	node = fdt_node_offset_by_compatible(fdt, -1, "nuvoton,nua3500-sspcc");
+	if (node < 0) {
+		WARN("The compatible property `nuvoton,nua3500-sspcc` not found\n");
+	}
+
+	fdt_getprop(fdt, node, "config", &value_len);
+	count = value_len / 4;
+	fdt_read_uint32_array(fdt, node, "config", count, cells);
+
 	/* unlock */
 	outp32((void *)SYS_RLKTZS, 0x59);
 	outp32((void *)SYS_RLKTZS, 0x16);
@@ -161,20 +174,10 @@ void plat_nua3500_init(void)
 	/* enable SSPCC clock */
 	outp32((void *)CLK_APBCLK2, inp32((void *)CLK_APBCLK2) | 0x8);
 
-	/* set SSPCC: Assign NAND/SDH0/SDH1 to TZNS */
-	outp32((void *)SSPCC_PSSET1, inp32((void *)SSPCC_PSSET1) | 0x150000);
-
-	/* set SSPCC: Assign CRYPTO TZNS */
-	outp32((void *)SSPCC_PSSET3, inp32((void *)SSPCC_PSSET3) | 0x1);
-
-	/* set SSPCC: Assign QSPI0 to TZNS */
-	outp32((void *)SSPCC_PSSET6, inp32((void *)SSPCC_PSSET6) | 0x10000);
-
-	/* set SSPCC: Assign UART0 to TZNS */
-	outp32((void *)SSPCC_PSSET7, inp32((void *)SSPCC_PSSET7) | 0x1);
-
-	/* set SSPCC: Assign TRNG to TZNS */
-	outp32((void *)SSPCC_PSSET11, inp32((void *)SSPCC_PSSET11) | 0x40000);
+	for (i=0; i<count; i+=3) {
+		reg = inp32(SSPCC_BASE+cells[i]) & ~(0x3 << cells[i+1]);
+		outp32(SSPCC_BASE+cells[i],  reg | cells[i+2] << cells[i+1]);
+	}
 
 	/* lock */
 	outp32((void *)SYS_RLKTZS, 0);

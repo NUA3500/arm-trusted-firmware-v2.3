@@ -17,6 +17,7 @@
 #include <dt-bindings/clock/nua3500-clk.h>
 #include <dt-bindings/pinctrl/nua3500-pinfunc.h>
 #include <dt-bindings/reset/nuvoton,nua3500-reset.h>
+#include "../plat/nuvoton/nua3500/include/sspcc.h"
 
 #define GIC_CPU_MASK_RAW(x) ((x) << 8)
 #define GIC_CPU_MASK_SIMPLE(num) GIC_CPU_MASK_RAW((1 << (num)) - 1)
@@ -379,6 +380,20 @@
 
 		/* sdhc information */
 		mmc-image-offset = <0xa0000>;
+	};
+
+	sspcc: sspcc@404F0000 {
+		compatible = "nuvoton,nua3500-sspcc";
+		reg = <0x0 0x404F0000 0x0 0x1000>;
+		config = <UART0_TZNS>,
+			<SDH0_TZNS>,
+			<SDH1_TZNS>,
+			<NAND_TZNS>,
+			<QSPI0_TZNS>,
+			<CRYPTO_TZNS>,
+			<TRNG_TZNS>;
+
+		status = "okay";
 	};
 
 };

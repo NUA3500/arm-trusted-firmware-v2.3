@@ -56,10 +56,6 @@ void bl2_el3_plat_arch_setup(void)
 
 	/* TODO: system config initial, power? */
 
-	/* TODO: doing ECC and AES? */
-#if 0
-	nua3500_init_auth(&stm32mp1_auth_ops);
-#endif
 	nua3500_arch_security_setup();
 
 	/* TODO: io setup? */

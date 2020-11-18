@@ -15,6 +15,9 @@ BL2_AT_EL3		:=	1
 USE_COHERENT_MEM	:=	0
 #ENABLE_PIE		:=	1
 
+# Flags to build TF with Trusted Boot support
+TRUSTED_BOARD_BOOT	:= 0
+
 # Pass NUA3500_CLUSTER_COUNT to the build system.
 $(eval $(call add_define,NUA3500_CLUSTER_COUNT))
 # Pass NUA3500_MAX_CPUS_PER_CLUSTER to the build system.
@@ -73,8 +76,8 @@ PLAT_BL_COMMON_SOURCES	:=	common/fdt_wrappers.c				\
 				plat/arm/common/arm_common.c			\
 				plat/nuvoton/nua3500/nua3500_common.c		\
 				plat/nuvoton/nua3500/nua3500_private.c		\
-				plat/nuvoton/nua3500/drivers/nua3500_crypto.c	\
-				plat/nuvoton/nua3500/drivers/tsi_cmd.c	        \
+#				plat/nuvoton/nua3500/drivers/nua3500_crypto.c	\
+#				plat/nuvoton/nua3500/drivers/tsi_cmd.c	        \
 
 include lib/xlat_tables_v2/xlat_tables.mk
 PLAT_BL_COMMON_SOURCES	+=	${XLAT_TABLES_LIB_SRCS}
@@ -88,17 +91,19 @@ PLAT_BL_COMMON_SOURCES	+=	drivers/arm/tzc/tzc400.c			\
 				drivers/delay_timer/generic_delay_timer.c	\
 				plat/nuvoton/nua3500/aarch64/nua3500_helpers.S	\
 
-BL2_SOURCES		+=	drivers/io/io_block.c				\
+BL2_SOURCES		+=	common/desc_image_load.c			\
+				drivers/io/io_block.c				\
 				drivers/io/io_fip.c				\
 				drivers/io/io_memmap.c				\
 				drivers/io/io_storage.c				\
 				plat/arm/common/arm_bl2_el3_setup.c		\
+				plat/arm/common/arm_dyn_cfg.c			\
+				plat/arm/common/arm_dyn_cfg_helpers.c		\
 				plat/nuvoton/nua3500/nua3500_bl2_setup.c	\
 				plat/nuvoton/nua3500/nua3500_io_storage.c	\
 				drivers/nuvoton/nand/nua3500_nand.c		\
 				drivers/nuvoton/qspi/nua3500_qspi.c		\
 				drivers/nuvoton/sdhc/nua3500_sdhc.c		\
-				plat/nuvoton/nua3500/nua3500_trusted_boot.c	\
 				plat/nuvoton/nua3500/nua3500_bl2_el3_setup.c	\
 				plat/nuvoton/nua3500/nua3500_bl2_mem_params_desc.c	\
 				plat/nuvoton/nua3500/nua3500_image_load.c		\
@@ -110,10 +115,6 @@ BL2_SOURCES		+=	drivers/io/io_block.c				\
 				${NUA3500_SECURITY_SOURCES}
 
 
-BL2_SOURCES		+=	common/desc_image_load.c
-
-BL2_SOURCES		+=	plat/arm/common/arm_dyn_cfg.c		\
-				plat/arm/common/arm_dyn_cfg_helpers.c	\
 
 
 BL31_SOURCES		+=	drivers/arm/smmu/smmu_v3.c			\
@@ -130,6 +131,82 @@ BL31_SOURCES		+=	plat/common/plat_psci_common.c
 include services/spd/opteed/opteed.mk
 
 override BL1_SOURCES =
+
+# Add the build options to pack Trusted OS Extra1 and Trusted OS Extra2 images
+# in the FIP if the platform requires.
+ifneq ($(BL32_EXTRA1),)
+$(eval $(call TOOL_ADD_IMG,BL32_EXTRA1,--tos-fw-extra1))
+endif
+
+ifeq (${TRUSTED_BOARD_BOOT},1)
+
+USE_TBBR_DEFS		:= 1
+GENERATE_COT		:= 1
+
+NVT_USE_RSA		:= 1
+NVT_USE_ECDSA		:= 0
+
+MBEDTLS_SHA256_SMALLER	:= 0
+
+# Set the default algorithm for the generation of Trusted Board Boot keys
+ifeq (${NVT_USE_RSA},1)
+	KEY_ALG		:= rsa
+endif
+ifeq (${NVT_USE_ECDSA},1)
+	KEY_ALG		:= ecdsa
+endif
+
+MBEDTLS_DIR=../mbedtls-2.18
+
+include drivers/auth/mbedtls/mbedtls_crypto.mk
+include drivers/auth/mbedtls/mbedtls_x509.mk
+
+BL2_SOURCES		+=	drivers/auth/auth_mod.c			\
+				drivers/auth/crypto_mod.c		\
+				drivers/auth/img_parser_mod.c		\
+				drivers/auth/tbbr/tbbr_cot_common.c	\
+				drivers/auth/tbbr/tbbr_cot_bl2.c	\
+				plat/common/tbbr/plat_tbbr.c		\
+				plat/nuvoton/nua3500/nua3500_rotpk.S	\
+				plat/nuvoton/nua3500/nua3500_trusted_boot.c
+
+ROT_KEY			= $(BUILD_PLAT)/rot_key.pem
+ROTPK_HASH		= $(BUILD_PLAT)/rotpk_sha256.bin
+
+$(eval $(call add_define_val,ROTPK_HASH,'"$(ROTPK_HASH)"'))
+#$(eval $(call MAKE_LIB_DIRS))
+
+$(BUILD_PLAT)/bl2/nua3500_rotpk.o: $(ROTPK_HASH)
+
+certificates: $(ROT_KEY)
+
+$(ROT_KEY): | $(BUILD_PLAT)
+	@echo "  OPENSSL $@"
+ifeq (${NVT_USE_RSA},1)
+	@if [ ! -f $(ROT_KEY) ]; then \
+		openssl genrsa 2048 > $@ 2>/dev/null; \
+	fi
+endif
+
+ifeq (${NVT_USE_ECDSA},1)
+	@if [ ! -f $(ROT_KEY) ]; then \
+		openssl ecparam -name secp256r1 -genkey -noout > $@ 2>/dev/null; \
+	fi
+endif
+
+$(ROTPK_HASH): $(ROT_KEY)
+	@echo "  OPENSSL $@"
+ifeq (${NVT_USE_RSA},1)
+	$(Q)openssl rsa -in $< -pubout -outform DER 2>/dev/null |\
+	openssl dgst -sha256 -binary > $@ 2>/dev/null
+endif
+
+ifeq (${NVT_USE_ECDSA},1)
+	$(Q)openssl ec -in $< -pubout -outform DER 2>/dev/null |\
+	openssl dgst -sha256 -binary > $@ 2>/dev/null
+endif
+
+endif
 
 
 

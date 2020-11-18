@@ -27,13 +27,13 @@
 #define NUA3500_CCI			1
 #define NUA3500_CCN			2
 
-#define MAX_IO_DEVICES			U(4)
-#define MAX_IO_HANDLES			U(4)
+#define MAX_IO_DEVICES			U(2)
+#define MAX_IO_HANDLES			U(2)
 #define MAX_IO_BLOCK_DEVICES		U(1)
-#define MAX_IO_MTD_DEVICES		U(1)
+//#define MAX_IO_MTD_DEVICES		U(1)
 
 /* Define maximum page size for NAND devices */
-#define PLATFORM_MTD_MAX_PAGE_SIZE	U(0x2000)
+//#define PLATFORM_MTD_MAX_PAGE_SIZE	U(0x2000)
 
 /*******************************************************************************
  * NUA3500 memory map related constants
@@ -52,13 +52,13 @@
 #define NUA3500_DDR_MAX_SIZE		U(0x10000000)	/* 256MB */
 
 #define NUA3500_BL2_BASE		U(0x28000000)
-#define NUA3500_BL2_SIZE		U(0x00018000)
+#define NUA3500_BL2_SIZE		U(0x00020000)
 
-#define NUA3500_DTB_BASE		U(0x28018000)
-#define NUA3500_DTB_SIZE		U(0x00001000)
+#define NUA3500_DTB_BASE		U(0x28020000)
+#define NUA3500_DTB_SIZE		U(0x00002000)
 
-#define NUA3500_BL31_BASE		U(0x28020000)
-#define NUA3500_BL31_SIZE		U(0x00020000)
+#define NUA3500_BL31_BASE		U(0x28022000)
+#define NUA3500_BL31_SIZE		U(0x00018000)
 
 #define NUA3500_BL32_BASE		U(0x8f800000)
 #define NUA3500_BL32_SIZE		U(0x00200000)
@@ -104,33 +104,33 @@
 #define NUA3500_DRAM_S_SIZE		U(0x00800000)
 
 /* Non-volatile counters */
-#define TRUSTED_NVCTR_BASE		UL(0x7fe70000)
-#define TFW_NVCTR_BASE			(TRUSTED_NVCTR_BASE + UL(0x0000))
-#define TFW_NVCTR_SIZE			UL(4)
-#define NTFW_CTR_BASE			(TRUSTED_NVCTR_BASE + UL(0x0004))
-#define NTFW_CTR_SIZE			UL(4)
+//#define TRUSTED_NVCTR_BASE		UL(0x7fe70000)
+//#define TFW_NVCTR_BASE			(TRUSTED_NVCTR_BASE + UL(0x0000))
+//#define TFW_NVCTR_SIZE			UL(4)
+//#define NTFW_CTR_BASE			(TRUSTED_NVCTR_BASE + UL(0x0004))
+//#define NTFW_CTR_SIZE			UL(4)
 
 /* Keys */
-#define SOC_KEYS_BASE			UL(0x7fe80000)
-#define TZ_PUB_KEY_HASH_BASE		(SOC_KEYS_BASE + UL(0x0000))
-#define TZ_PUB_KEY_HASH_SIZE		UL(32)
-#define HU_KEY_BASE			(SOC_KEYS_BASE + UL(0x0020))
-#define HU_KEY_SIZE			UL(16)
-#define END_KEY_BASE			(SOC_KEYS_BASE + UL(0x0044))
-#define END_KEY_SIZE			UL(32)
+//#define SOC_KEYS_BASE			UL(0x7fe80000)
+//#define TZ_PUB_KEY_HASH_BASE		(SOC_KEYS_BASE + UL(0x0000))
+//#define TZ_PUB_KEY_HASH_SIZE		UL(32)
+//#define HU_KEY_BASE			(SOC_KEYS_BASE + UL(0x0020))
+//#define HU_KEY_SIZE			UL(16)
+//#define END_KEY_BASE			(SOC_KEYS_BASE + UL(0x0044))
+//#define END_KEY_SIZE			UL(32)
 
 /* Constants to distinguish NUA3500 type */
-#define HBI_BASE_NUA3500			U(0x020)
-#define REV_BASE_NUA3500_V0			U(0x0)
-#define REV_BASE_NUA3500_REVC		U(0x2)
+//#define HBI_BASE_NUA3500			U(0x020)
+//#define REV_BASE_NUA3500_V0			U(0x0)
+//#define REV_BASE_NUA3500_REVC		U(0x2)
 
-#define HBI_FOUNDATION_NUA3500		U(0x010)
-#define REV_FOUNDATION_NUA3500_V2_0		U(0x0)
-#define REV_FOUNDATION_NUA3500_V2_1		U(0x1)
-#define REV_FOUNDATION_NUA3500_v9_1		U(0x2)
-#define REV_FOUNDATION_NUA3500_v9_6		U(0x3)
+//#define HBI_FOUNDATION_NUA3500		U(0x010)
+//#define REV_FOUNDATION_NUA3500_V2_0		U(0x0)
+//#define REV_FOUNDATION_NUA3500_V2_1		U(0x1)
+//#define REV_FOUNDATION_NUA3500_v9_1		U(0x2)
+//#define REV_FOUNDATION_NUA3500_v9_6		U(0x3)
 
-#define ARCH_MODEL			U(0x1)
+//#define ARCH_MODEL			U(0x1)
 
 /* NUA3500 Power controller base address*/
 #define PWRC_BASE			UL(0x1c100000)
@@ -176,7 +176,7 @@
 /*************************************/
 #define UMCTL2_BA       U(0x404d0000)
 #define SYS_BA          U(0x40460000)
-#define CLK_BA          0x40460200
+#define CLK_BA          U(0x40460200)
 
 /* sys registers */
 #define SYS_PWRONOTP	U(0x40460004)
@@ -209,11 +209,7 @@
 #define CLK_CLKDIV1	U(0x40460230)
 
 /* sspcc registers */
-#define SSPCC_PSSET1	U(0x404F0004)
-#define SSPCC_PSSET3	U(0x404F000C)
-#define SSPCC_PSSET6	U(0x404F0018)
-#define SSPCC_PSSET7	U(0x404F001C)
-#define SSPCC_PSSET11	U(0x404F002C)
+#define SSPCC_BASE	U(0x404F0000)
 
 /* crypto define */
 #define CRYPTO_BASE	U(0x40300000)
