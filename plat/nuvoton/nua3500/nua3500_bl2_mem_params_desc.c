@@ -36,8 +36,13 @@ static bl_mem_params_node_t bl2_mem_params_descs[] = {
 		.image_info.image_base = BL31_BASE,
 		.image_info.image_max_size = BL31_LIMIT - BL31_BASE,
 
+#ifdef NUA3500_LOAD_BL32
 		.next_handoff_image_id = BL32_IMAGE_ID,
+#else
+		.next_handoff_image_id = BL33_IMAGE_ID,
+#endif
 	},
+#ifdef NUA3500_LOAD_BL32
 	/* Fill BL32 related information */
 	{
 		.image_id = BL32_IMAGE_ID,
@@ -91,7 +96,7 @@ static bl_mem_params_node_t bl2_mem_params_descs[] = {
 
 		.next_handoff_image_id = INVALID_IMAGE_ID,
 	},
-
+#endif
 	/* Fill BL33 related information */
 	{
 		.image_id = BL33_IMAGE_ID,

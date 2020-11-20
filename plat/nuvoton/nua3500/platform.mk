@@ -40,6 +40,10 @@ USE_DEBUGFS		:= 1
 DEBUG			:= 1
 LOG_LEVEL		:= 40
 
+ifeq ($(NEED_BL32),yes)
+$(eval $(call add_define,NUA3500_LOAD_BL32))
+endif
+
 # Enable dynamic memory mapping
 PLAT_XLAT_TABLES_DYNAMIC :=	1
 $(eval $(call assert_boolean,PLAT_XLAT_TABLES_DYNAMIC))
@@ -128,7 +132,9 @@ BL31_SOURCES		+=	drivers/arm/smmu/smmu_v3.c			\
 
 BL31_SOURCES		+=	plat/common/plat_psci_common.c
 
+ifeq ($(NEED_BL32),yes)
 include services/spd/opteed/opteed.mk
+endif
 
 override BL1_SOURCES =
 
@@ -143,8 +149,8 @@ ifeq (${TRUSTED_BOARD_BOOT},1)
 USE_TBBR_DEFS		:= 1
 GENERATE_COT		:= 1
 
-NVT_USE_RSA		:= 1
-NVT_USE_ECDSA		:= 0
+NVT_USE_RSA		:= 0
+NVT_USE_ECDSA		:= 1
 
 MBEDTLS_SHA256_SMALLER	:= 0
 
