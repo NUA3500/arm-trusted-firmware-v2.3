@@ -132,12 +132,15 @@ static const interrupt_prop_t nvt_interrupt_props[] = {
 		       GICV2_INTR_GROUP0, GIC_INTR_CFG_LEVEL)
 };
 
+static unsigned int target_mask_array[PLATFORM_CORE_COUNT];
 
 gicv2_driver_data_t arm_gic_data = {
 	.gicd_base = BASE_GICD_BASE,
 	.gicc_base = BASE_GICC_BASE,
 	.interrupt_props = nvt_interrupt_props,
 	.interrupt_props_num = ARRAY_SIZE(nvt_interrupt_props),
+	.target_masks = target_mask_array,
+	.target_masks_num = ARRAY_SIZE(target_mask_array),
 };
 
 
