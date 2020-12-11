@@ -34,7 +34,7 @@
 static uintptr_t nua3500_sec_entrypoint;
 
 #define SYS_BASE 0x40460000
-#define PMUCR	0x30
+#define PMUCR 0x30
 #define DDRCQCSR 0x34
 #define PMUIEN 0x38
 #define PMUSTS 0x3C
@@ -46,13 +46,11 @@ static uintptr_t nua3500_sec_entrypoint;
 
 #define CLK_BASE 0x40460200
 #define PWRCTL 0x0
-#define PLL2CTL1 0x84
 #define STATUS 0x50
 
 static __inline void nua3500_UnlockReg(void)
 {
-	do
-	{
+	do {
 		mmio_write_32(0x404601A0, 0x59UL);
 		mmio_write_32(0x404601A0, 0x16UL);
 		mmio_write_32(0x404601A0, 0x88UL);
@@ -80,25 +78,25 @@ void nua3500_ddr_hw_pd(void)
 
 	//disable DDR CG bypass
 	mmio_write_32(SYS_BASE + MISCFCR,
-	              mmio_read_32(SYS_BASE + MISCFCR) & ~(1 << 23));
+					mmio_read_32(SYS_BASE + MISCFCR) & ~(1 << 23));
 
 	//[11:8]= pg chain time period for voltage stable
 	mmio_write_32(SYS_BASE + PMUCR,
-	              mmio_read_32(SYS_BASE + PMUCR) & 0xfffff0ff);
+					mmio_read_32(SYS_BASE + PMUCR) & 0xfffff0ff);
 
 	//[15:12]= pg chain timeout
 	mmio_write_32(SYS_BASE + PMUCR,
-	              (mmio_read_32(SYS_BASE + PMUCR) & 0xfffff0ff) |
-	              (0x2 << 12));
+				(mmio_read_32(SYS_BASE + PMUCR) & 0xfffff0ff) | (0x2 << 12));
 
 	//[31:24]=DDR time out & delay
 	mmio_write_32(SYS_BASE + DDRCQCSR,
-	              mmio_read_32(SYS_BASE + DDRCQCSR) & 0x00ffffff);
+					mmio_read_32(SYS_BASE + DDRCQCSR) & 0x00ffffff);
 
-	//[16]=DDRCQBYPAS,
-	mmio_write_32(SYS_BASE + DDRCQCSR, mmio_read_32(SYS_BASE + DDRCQCSR) & ~(0x1 << 16));	//disable ddrc qch bypass
+	//[16]=DDRCQBYPAS, disable ddrc qch bypass
+	mmio_write_32(SYS_BASE + DDRCQCSR,
+					mmio_read_32(SYS_BASE + DDRCQCSR) & ~(0x1 << 16));
 
-//-----------------------------------------------------------------------------------
+//------------------------------------------------------------------------
 	//[7:0]=AXIQBYPAS,
 	DDR_QCH_BPPORT0 = 1;
 	DDR_QCH_BPPORT1 = 1;
@@ -109,37 +107,45 @@ void nua3500_ddr_hw_pd(void)
 	DDR_QCH_BPPORT6 = 1;
 	DDR_QCH_BPPORT7 = 1;
 
-	if ((mmio_read_32((0x404d0000 + 0x490)) & 0x1) & ((mmio_read_32((0x40460000 + 0x204)) >> 4) & 0x1))
+	if ((mmio_read_32((0x404d0000 + 0x490)) & 0x1) & 
+		((mmio_read_32((0x40460000 + 0x204)) >> 4) & 0x1))
 		DDR_QCH_BPPORT0 = 0;	//A35
-	if ((mmio_read_32(0x404d0000 + 0x540) & 0x1) & ((mmio_read_32((0x40460000 + 0x204)) >> 24) & 0x1))
+	if ((mmio_read_32(0x404d0000 + 0x540) & 0x1) &
+		((mmio_read_32((0x40460000 + 0x204)) >> 24) & 0x1))
 		DDR_QCH_BPPORT1 = 0;	//GFX
-	if ((mmio_read_32((0x404d0000 + 0x5f0)) & 0x1) & ((mmio_read_32((0x40460000 + 0x204)) >> 26) & 0x1))
+	if ((mmio_read_32((0x404d0000 + 0x5f0)) & 0x1) &
+		((mmio_read_32((0x40460000 + 0x204)) >> 26) & 0x1))
 		DDR_QCH_BPPORT2 = 0;	//DC
-	if ((mmio_read_32((0x404d0000 + 0x6a0)) & 0x1) & ((mmio_read_32((0x40460000 + 0x204)) >> 25) & 0x1))
+	if ((mmio_read_32((0x404d0000 + 0x6a0)) & 0x1) &
+		((mmio_read_32((0x40460000 + 0x204)) >> 25) & 0x1))
 		DDR_QCH_BPPORT3 = 0;	//VC8000
-	if ((mmio_read_32((0x404d0000 + 0x750)) & 0x1) & (((mmio_read_32((0x40460000 + 0x204)) >> 27) | (mmio_read_32((0x40460000 + 0x200)) >> 28)) & 0x1))
+	if ((mmio_read_32((0x404d0000 + 0x750)) & 0x1) &
+		(((mmio_read_32((0x40460000 + 0x204)) >> 27) |
+		(mmio_read_32((0x40460000 + 0x200)) >> 28)) & 0x1))
 		DDR_QCH_BPPORT4 = 0;	//GMAC
-	if ((mmio_read_32((0x404d0000 + 0x800)) & 0x1) & (((mmio_read_32((0x40460000 + 0x204)) >> 29) | (mmio_read_32((0x40460000 + 0x200)) >> 30)) & 0x1))
+	if ((mmio_read_32((0x404d0000 + 0x800)) & 0x1) &
+		(((mmio_read_32((0x40460000 + 0x204)) >> 29) |
+		(mmio_read_32((0x40460000 + 0x200)) >> 30)) & 0x1))
 		DDR_QCH_BPPORT5 = 0;	//CCAP
-	if ((mmio_read_32((0x404d0000 + 0x8b0)) & 0x1) & ((mmio_read_32((0x40460000 + 0x204)) >> 5) & 0x1))
+	if ((mmio_read_32((0x404d0000 + 0x8b0)) & 0x1) &
+		((mmio_read_32((0x40460000 + 0x204)) >> 5) & 0x1))
 		DDR_QCH_BPPORT6 = 0;	//system
 
 	mmio_write_32(SYS_BASE + DDRCQCSR,
-	              (mmio_read_32(SYS_BASE + DDRCQCSR) & ~0xFF) |
-	              (DDR_QCH_BPPORT0 << 0) |
-	              (DDR_QCH_BPPORT1 << 1) |
-	              (DDR_QCH_BPPORT2 << 2) |
-	              (DDR_QCH_BPPORT3 << 3) |
-	              (DDR_QCH_BPPORT4 << 4) |
-	              (DDR_QCH_BPPORT5 << 5) |
-	              (DDR_QCH_BPPORT6 << 6) |
-	              (DDR_QCH_BPPORT7 << 7));	//disable ddr 8 ports qch bypass
+			(mmio_read_32(SYS_BASE + DDRCQCSR) & ~0xFF) |
+			(DDR_QCH_BPPORT0 << 0) |
+			(DDR_QCH_BPPORT1 << 1) |
+			(DDR_QCH_BPPORT2 << 2) |
+			(DDR_QCH_BPPORT3 << 3) |
+			(DDR_QCH_BPPORT4 << 4) |
+			(DDR_QCH_BPPORT5 << 5) |
+			(DDR_QCH_BPPORT6 << 6) |
+			(DDR_QCH_BPPORT7 << 7));//disable ddr 8 ports qch bypass
 
 	//L2 auto-flush
 	mmio_write_32(SYS_BASE + PMUCR,
-	              mmio_read_32(SYS_BASE + PMUCR) & ~(1 << 4));
+			mmio_read_32(SYS_BASE + PMUCR) & ~(1 << 4));
 }
-
 
 void nua3500_deep_power_down(void)
 {
@@ -147,48 +153,50 @@ void nua3500_deep_power_down(void)
 
 	nua3500_ddr_hw_pd();
 
-	//[0]=pg_eanble
-	mmio_write_32(SYS_BASE + PMUCR, mmio_read_32(SYS_BASE + PMUCR) | (1 << 0));	// Enable clock gating
+	//[0]=pg_eanble, Enable clock gating
+	mmio_write_32(SYS_BASE + PMUCR,
+			mmio_read_32(SYS_BASE + PMUCR) | (1 << 0));
 
-	//[16]=pd_eanble
-	mmio_write_32(SYS_BASE + PMUCR, mmio_read_32(SYS_BASE + PMUCR) | (1 << 16));	// Enable PD
+	//[16]=pd_eanble, Enable PD
+	mmio_write_32(SYS_BASE + PMUCR,
+			mmio_read_32(SYS_BASE + PMUCR) | (1 << 16));
 
-	//[16]=PMUIEN,
-	mmio_write_32(SYS_BASE + PMUIEN, mmio_read_32(SYS_BASE + PMUIEN) | (1 << 0) | (1 << 8));	// Enable PD
+	//[16]=PMUIEN, Enable PD
+	mmio_write_32(SYS_BASE + PMUIEN,
+			mmio_read_32(SYS_BASE + PMUIEN) | (1 << 0) | (1 << 8));
 
 	nua3500_LockReg();
 }
 
 void nua3500_normal_power_down(void)
 {
-
 	nua3500_UnlockReg();
 
 	mmio_write_32(CLK_BASE + PWRCTL,
-	              mmio_read_32(CLK_BASE + PWRCTL) | (1 << 21));
+			mmio_read_32(CLK_BASE + PWRCTL) | (1 << 21));
 
 	nua3500_ddr_hw_pd();
 
 	// Disable L2 flush by PMU
 	mmio_write_32(SYS_BASE + PMUCR,
-	              mmio_read_32(SYS_BASE + PMUCR) | (1 << 4));
+			mmio_read_32(SYS_BASE + PMUCR) | (1 << 4));
 
-	//[0]=pg_eanble
-	mmio_write_32(SYS_BASE + PMUCR, mmio_read_32(SYS_BASE + PMUCR) & ~(1 << 0));	// Disable clock gating
+	//[0]=pg_eanble, Disable clock gating
+	mmio_write_32(SYS_BASE + PMUCR,
+			mmio_read_32(SYS_BASE + PMUCR) & ~(1 << 0));
 
-	//[16]=pd_eanble
-	mmio_write_32(SYS_BASE + PMUCR, mmio_read_32(SYS_BASE + PMUCR) | (1 << 16));	// Enable Power down
+	//[16]=pd_eanble, Enable Power down
+	mmio_write_32(SYS_BASE + PMUCR,
+			mmio_read_32(SYS_BASE + PMUCR) | (1 << 16));
 
 	//[16]=PMUIEN,
 	mmio_write_32(SYS_BASE + PMUIEN,
-	              mmio_read_32(SYS_BASE +
-	                           PMUIEN) | (1 << 0) | (1 << 8));
+			mmio_read_32(SYS_BASE + PMUIEN) | (1 << 0) | (1 << 8));
 	nua3500_LockReg();
 }
 
 
-static void nua3500_cpu_standby(plat_local_state_t
-                                cpu_state)
+static void nua3500_cpu_standby(plat_local_state_t cpu_state)
 {
 
 	u_register_t scr;
@@ -215,34 +223,28 @@ static int nua3500_pwr_domain_on(u_register_t mpidr)
 	return rc;
 }
 
-static void nua3500_pwr_domain_off(const psci_power_state_t *
-                                   target_state)
+static void nua3500_pwr_domain_off(const psci_power_state_t *target_state)
 {
 
 }
 
-static void nua3500_pwr_domain_suspend(const psci_power_state_t *
-                                       target_state)
+static void nua3500_pwr_domain_suspend(const psci_power_state_t *target_state)
 {
 	unsigned int reg;
 
-	if (NUA3500_CORE_PWR_STATE(target_state) !=
-	    PLAT_MAX_OFF_STATE)
+	if (NUA3500_CORE_PWR_STATE(target_state) != PLAT_MAX_OFF_STATE)
 		return;
 
 	disable_mmu_el3();
 
-	if(mmio_read_32(SYS_BASE+DDRCQCSR)&0x0002FF00){
+	if(mmio_read_32(SYS_BASE+DDRCQCSR)&0x0002FF00) {
 		reg =mmio_read_32(SYS_BASE + DDRCQCSR);
 		mmio_write_32(SYS_BASE + DDRCQCSR,reg);
 	}
 
-	if (NUA3500_SYSTEM_PWR_STATE(target_state) ==
-	    PLAT_MAX_OFF_STATE) {
-		mmio_write_32(SYS_BASE + CA35WRBADR1,
-		              nua3500_sec_entrypoint);
-		mmio_write_32(SYS_BASE + CA35WRBPAR1,
-		              0x7761726D);
+	if (NUA3500_SYSTEM_PWR_STATE(target_state) == PLAT_MAX_OFF_STATE) {
+		mmio_write_32(SYS_BASE + CA35WRBADR1, nua3500_sec_entrypoint);
+		mmio_write_32(SYS_BASE + CA35WRBPAR1, 0x7761726D);
 		nua3500_deep_power_down();
 	} else {
 
@@ -251,8 +253,7 @@ static void nua3500_pwr_domain_suspend(const psci_power_state_t *
 
 }
 
-static void nua3500_pwr_domain_on_finish(const psci_power_state_t *
-        target_state)
+static void nua3500_pwr_domain_on_finish(const psci_power_state_t *target_state)
 {
 
 }
@@ -263,11 +264,9 @@ int nua3500_validate_ns_entrypoint(uintptr_t ns_entrypoint)
 }
 
 
-static void nua3500_pwr_domain_suspend_finish(const 
-				psci_power_state_t * target_state)
-
+static void nua3500_pwr_domain_suspend_finish(const
+			psci_power_state_t * target_state)
 {
-
 	/* Clear poer down flag */
 	mmio_write_32(SYS_BASE + PMUSTS, (1 << 8));
 
@@ -306,7 +305,7 @@ static void __dead2 nua3500_system_reset(void)
 
 
 static int nua3500_validate_power_state(unsigned int power_state,
-                                        psci_power_state_t * req_state)
+					psci_power_state_t * req_state)
 {
 	int pstate = psci_get_pstate_type(power_state);
 	int pwr_lvl = psci_get_pstate_pwrlvl(power_state);
@@ -314,13 +313,11 @@ static int nua3500_validate_power_state(unsigned int power_state,
 
 	assert(req_state);
 
-	if (pwr_lvl >
-	    PLAT_MAX_PWR_LVL)
+	if (pwr_lvl > PLAT_MAX_PWR_LVL)
 		return PSCI_E_INVALID_PARAMS;
 
 	/* Sanity check the requested state */
 	if (pstate == PSTATE_TYPE_STANDBY) {
-
 		/*
 		 * It's probably to enter standby only on power level 0
 		 * ignore any other power level.
@@ -328,22 +325,15 @@ static int nua3500_validate_power_state(unsigned int power_state,
 		if (pwr_lvl != MPIDR_AFFLVL0)
 			return PSCI_E_INVALID_PARAMS;
 
-		req_state->pwr_domain_state[MPIDR_AFFLVL0] =
-
-		    PLAT_MAX_RET_STATE;
+		req_state->pwr_domain_state[MPIDR_AFFLVL0] = PLAT_MAX_RET_STATE;
 	} else {
 
 		for (i = MPIDR_AFFLVL0; i <= pwr_lvl; i++)
-			req_state->pwr_domain_state[i] =
-			    PLAT_MAX_OFF_STATE;
+			req_state->pwr_domain_state[i] = PLAT_MAX_OFF_STATE;
 
-		for (i = (pwr_lvl); i <= PLAT_MAX_PWR_LVL;
-		     i++)
-			req_state->pwr_domain_state[i] =
-
-			    PLAT_MAX_RET_STATE;
+		for (i = (pwr_lvl); i <= PLAT_MAX_PWR_LVL; i++)
+			req_state->pwr_domain_state[i] = PLAT_MAX_RET_STATE;
 	}
-
 
 	/* We expect the 'state id' to be zero */
 	if (psci_get_pstate_id(power_state))
@@ -354,21 +344,17 @@ static int nua3500_validate_power_state(unsigned int power_state,
 
 
 void nua3500_get_sys_suspend_power_state(psci_power_state_t
-        *
-        req_state)
+        *req_state)
 {
 	int i;
 
-	for (i = MPIDR_AFFLVL0; i <= PLAT_MAX_PWR_LVL;
-	     i++)
-		req_state->pwr_domain_state[i] =
-		    PLAT_MAX_OFF_STATE;
+	for (i = MPIDR_AFFLVL0; i <= PLAT_MAX_PWR_LVL; i++)
+		req_state->pwr_domain_state[i] = PLAT_MAX_OFF_STATE;
 }
 
 
 void __dead2 nua3500_pwr_domain_pwr_down_wfi(const
-        psci_power_state_t * target_state)
-
+						psci_power_state_t * target_state)										
 {
 	u_register_t scr;
 
@@ -411,12 +397,11 @@ plat_psci_ops_t plat_arm_psci_pm_ops = {
  * Export the platform specific power ops.
  ******************************************************************************/
 int plat_setup_psci_ops(uintptr_t sec_entrypoint,
-                        const plat_psci_ops_t ** psci_ops)
+			const plat_psci_ops_t ** psci_ops)
 {
 	nua3500_sec_entrypoint = sec_entrypoint;
 	*psci_ops = &plat_arm_psci_pm_ops;
 
-	mmio_write_32(CLK_BASE, mmio_read_32(CLK_BASE) | (1 << 9));	//ICE DB
+	mmio_write_32(CLK_BASE, mmio_read_32(CLK_BASE) | (1 << 9));//ICE DB
 	return 0;
 }
-
