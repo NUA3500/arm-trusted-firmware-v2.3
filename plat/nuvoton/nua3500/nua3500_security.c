@@ -79,6 +79,8 @@ static void early_init_tzc400(void)
 {
 	/* SSMCC clock enable */
 	outp32((void *)0X40460214, inp32((void *)0X40460214) | (1 << 2));
+	outp32((void *)0X40460218, inp32((void *)0X40460218) | (1 << 2));
+	outp32((void *)0X40460204, inp32((void *)0X40460204) | 0x7f000000);
 
 	/* should call tzc400_init() 3 times? */
 	/* TZC1 */

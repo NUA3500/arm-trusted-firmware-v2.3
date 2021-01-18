@@ -54,7 +54,7 @@ func console_nua3500_core_init
 	and w3, w3, #~0xff00ffff
 	orr	w3, w3, #0x30000000
 	orr	w3, w3, w1
-	mov	w3, #0x000E		// add by chp
+	mov	w3, #0x00CE		// add by chp
 	movk	w3, #0x3000, lsl #16		// add by chp
 	str	w3, [x0, #UARTBAUD]
 

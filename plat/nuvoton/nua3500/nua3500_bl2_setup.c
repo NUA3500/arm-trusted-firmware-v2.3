@@ -52,13 +52,10 @@ void bl2_el3_plat_arch_setup(void)
 
 	generic_delay_timer_init();
 
-	/* TODO: clock initial ? */
-
 	/* TODO: system config initial, power? */
 
 	nua3500_arch_security_setup();
 
-	/* TODO: io setup? */
 	nua3500_io_setup();
 }
 

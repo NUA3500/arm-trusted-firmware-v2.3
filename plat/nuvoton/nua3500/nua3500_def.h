@@ -58,12 +58,12 @@
 #define NUA3500_DTB_SIZE		U(0x00002000)
 
 #define NUA3500_BL31_BASE		U(0x28022000)
-#define NUA3500_BL31_SIZE		U(0x00018000)
+#define NUA3500_BL31_SIZE		U(0x00016000)	/* 0x28038000 is reserved to IBR */
 
 #define NUA3500_BL32_BASE		U(0x8f800000)
 #define NUA3500_BL32_SIZE		U(0x00200000)
 
-#define NUA3500_BL33_BASE		U(0x80E00000)
+#define NUA3500_BL33_BASE		U(0x87000000)
 #define NUA3500_BL33_SIZE		U(0x01000000)
 
 #define BL2_BASE			NUA3500_BL2_BASE
@@ -73,7 +73,7 @@
 #define DTB_LIMIT			(NUA3500_DTB_BASE + NUA3500_DTB_SIZE)
 
 #define NUA3500_FIP_SIZE		0x00100000
-#define NUA3500_FIP_BASE		(NUA3500_DDR_BASE)
+#define NUA3500_FIP_BASE		U(0x86000000)	//(NUA3500_DDR_BASE)
 #define NUA3500_FIP_LIMIT		(NUA3500_FIP_BASE + NUA3500_FIP_SIZE)
 
 /*
@@ -87,9 +87,6 @@
 
 #define BL33_BASE			NUA3500_BL33_BASE
 #define BL33_LIMIT			(NUA3500_BL33_BASE + NUA3500_BL33_SIZE)
-
-#define DTB_BASE			NUA3500_DTB_BASE
-#define DTB_LIMIT			(NUA3500_DTB_BASE + NUA3500_DTB_SIZE)
 
 /*******************************************************************************
  * nua3500 device/io map related constants (used for MMU)
@@ -175,6 +172,7 @@
 
 /*************************************/
 #define UMCTL2_BA       U(0x404d0000)
+#define DDRPHY_BA       U(0x404c0000)
 #define SYS_BA          U(0x40460000)
 #define CLK_BA          U(0x40460200)
 
@@ -207,6 +205,17 @@
 #define CLK_CLKSEL1	U(0x4046021C)
 #define CLK_CLKSEL2	U(0x40460220)
 #define CLK_CLKDIV1	U(0x40460230)
+#define CLK_STATUS	U(0x40460250)
+
+#define CLK_PLL0CTL0	U(0x40460260)
+#define CLK_PLL0CTL1	U(0x40460264)
+#define CLK_PLL0CTL2	U(0x40460268)
+#define CLK_PLL1CTL0	U(0x40460270)
+#define CLK_PLL1CTL1	U(0x40460274)
+#define CLK_PLL1CTL2	U(0x40460278)
+#define CLK_PLL4CTL0	U(0x404602A0)
+#define CLK_PLL4CTL1	U(0x404602A4)
+#define CLK_PLL4CTL2	U(0x404602A8)
 
 /* sspcc registers */
 #define SSPCC_BASE	U(0x404F0000)
