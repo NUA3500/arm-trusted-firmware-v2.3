@@ -329,7 +329,7 @@
 		status = "okay";
 
 		/* sdhc information */
-		mmc-image-offset = <0xa0000>;
+		mmc-image-offset = <0x100000>;
 	};
 
 	sdhci1: sdhci@40190000 {
@@ -337,8 +337,8 @@
 		pinctrl-0 = <&pinctrl_sdhci1>;
 		//u-boot,dm-pre-reloc;
 		compatible = "snps,dwcmshc-sdhci1";
-		reg = <0x0 0x40180000 0x0 0x2000>;
-		interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
+		reg = <0x0 0x40190000 0x0 0x2000>;
+		interrupts = <GIC_SPI 31 IRQ_TYPE_LEVEL_HIGH>;
 		/* clocks = <&emmcclk>; */
 		bus-width = <4>;
 		max-frequency = <200000000>;
@@ -347,7 +347,7 @@
 		status = "okay";
 
 		/* sdhc information */
-		mmc-image-offset = <0xa0000>;
+		mmc-image-offset = <0x100000>;
 	};
 
 	sspcc: sspcc@404F0000 {

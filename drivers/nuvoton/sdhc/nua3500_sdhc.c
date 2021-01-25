@@ -52,8 +52,8 @@ struct mmc {
 struct mmc nua3500_mmc;
 
 /*********************************************************/
-#define SDH_CMD_MAX_TIMEOUT         3200
-#define SDH_CMD_DEFAULT_TIMEOUT     100
+#define SDH_CMD_MAX_TIMEOUT         32000
+#define SDH_CMD_DEFAULT_TIMEOUT     10000
 #define SDH_MAX_DIV_SPEC_300        2046
 
 /*********************************************************/
@@ -156,7 +156,7 @@ static int sdh_transfer_data(struct mmc *mmc, struct mmc_data *data)
 	else
 		start_addr=(unsigned long)data->src;
 
-	timeout = 1000000;
+	timeout = 2000000;
 	//rdy = 0x30; /* SDHCI_INT_SPACE_AVAIL | SDHCI_INT_DATA_AVAIL */
 	//mask = 0xc00; /* SDHCI_DATA_AVAILABLE | SDHCI_SPACE_AVAILABLE */
 	do {

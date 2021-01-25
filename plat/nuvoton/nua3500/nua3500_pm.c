@@ -219,8 +219,15 @@ static void nua3500_cpu_standby(plat_local_state_t cpu_state)
 
 static int nua3500_pwr_domain_on(u_register_t mpidr)
 {
-	int rc = PSCI_E_SUCCESS;
-	return rc;
+	uint32_t loop;
+
+	for (loop = 0; loop < 100; loop++)
+	{
+		mmio_write_32(SYS_BASE + CA35WRBADR2, nua3500_sec_entrypoint);
+		sev();
+	}
+
+	return PSCI_E_SUCCESS;
 }
 
 static void nua3500_pwr_domain_off(const psci_power_state_t *target_state)
@@ -255,7 +262,11 @@ static void nua3500_pwr_domain_suspend(const psci_power_state_t *target_state)
 
 static void nua3500_pwr_domain_on_finish(const psci_power_state_t *target_state)
 {
+	plat_arm_gic_init();
 
+	/* Enable the gic cpu interface */
+	gicv2_cpuif_enable();
+	gicv2_pcpu_distif_init();
 }
 
 int nua3500_validate_ns_entrypoint(uintptr_t ns_entrypoint)
