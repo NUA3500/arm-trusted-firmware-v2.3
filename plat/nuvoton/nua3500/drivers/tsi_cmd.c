@@ -331,7 +331,7 @@ int TSI_AES_Set_Mode(int sid, int kinswap, int koutswap, int inswap,
 
 	memset(&req, 0, sizeof(req));
 	req.cmd[0] = (CMD_AES_SET_MODE << 16) | sid;
-	req.cmd[1] = (kinswap << 25) | (kinswap << 24) | (inswap << 23) |
+	req.cmd[1] = (kinswap << 25) | (koutswap << 24) | (inswap << 23) |
 			 (outswap << 22) | (sm4en << 17) | (encrypt << 16) |
 			 (mode << 8) | (keysz << 2);
 	req.cmd[2] = (ks << 5) | ks_num;
