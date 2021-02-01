@@ -463,9 +463,9 @@ static void nua3500_nand_setup(struct nua3500_nand_info *nand)
 		WARN("device tree header check error.\n");
 	}
 
-	node = fdt_node_offset_by_compatible(fdt, -1, "nuvoton,nua3500-nfi");
+	node = fdt_node_offset_by_compatible(fdt, -1, "nuvoton,nua3500-nand");
 	if (node < 0) {
-		WARN("The compatible property `nuvoton,nua3500-nfi` not found\n");
+		WARN("The compatible property `nuvoton,nua3500-nand` not found\n");
 	}
 
 	nand->max_bit_corr = fdt_read_uint32_default(fdt, node, "nand-ecc-strength", 8);
