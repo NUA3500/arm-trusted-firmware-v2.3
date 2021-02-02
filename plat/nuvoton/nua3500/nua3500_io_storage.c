@@ -19,7 +19,7 @@
 
 #include "nua3500_private.h"
 
-#define NVT_FIP_MMAP
+//#define NVT_FIP_MMAP
 
 int nua3500_nand_init(struct io_block_dev_spec **block_dev_spec, long *offset);
 int nua3500_spinand_init(struct io_block_dev_spec **block_dev_spec, long *offset, int is_quad);
