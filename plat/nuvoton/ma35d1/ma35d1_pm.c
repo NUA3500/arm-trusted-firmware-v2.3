@@ -250,6 +250,7 @@ static void ma35d1_pwr_domain_suspend(const psci_power_state_t *target_state)
 	}
 
 	if (MA35D1_SYSTEM_PWR_STATE(target_state) == PLAT_MAX_OFF_STATE) {
+		mmio_write_32(0x2803fd04, 0);
 		mmio_write_32(SYS_BASE + CA35WRBADR1, ma35d1_sec_entrypoint);
 		mmio_write_32(SYS_BASE + CA35WRBPAR1, 0x7761726D);
 		ma35d1_deep_power_down();
