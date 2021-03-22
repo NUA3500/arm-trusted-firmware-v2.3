@@ -359,6 +359,7 @@
 			<NAND_TZNS>,
 			<QSPI0_TZNS>,
 			<CRYPTO_TZNS>,
+			<WDTWWDT1_TZNS>,
 			<TRNG_TZNS>;
 
 		/* gpio_s = <PA0_S>, */
