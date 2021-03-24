@@ -275,7 +275,7 @@
 		status = "okay";
 
 		/* spi information */
-		spi-image-offset = <0xa0000>;
+		spi-image-offset = <0x100000>;
 		spi-quad-read-cmd = <0x6B>;
 		spi-status-read-cmd = <0x05>;
 		spi-status-write-cmd = <0x01>;
@@ -360,6 +360,7 @@
 			<QSPI0_TZNS>,
 			<CRYPTO_TZNS>,
 			<WDTWWDT1_TZNS>,
+			<HSUSBD_TZNS>,
 			<TRNG_TZNS>;
 
 		/* gpio_s = <PA0_S>, */

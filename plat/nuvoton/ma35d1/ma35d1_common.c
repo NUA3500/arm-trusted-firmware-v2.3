@@ -293,6 +293,9 @@ void plat_ma35d1_init(void)
 		}
 	}
 
+	/* enable WDT1/WDT2 reset */
+	outp32((void *)(SYS_BA+14), 0x70000);
+
 	/* lock */
 	outp32((void *)SYS_RLKTZS, 0);
 }
