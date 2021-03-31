@@ -130,9 +130,6 @@
 		reg = <0x0  0x40460000  0x0  0x200>;
 	};
 
-	ddr: ddr-controller {
-		compatible = "wb-ddr3-256mb";	/* wb-ddr3-256mb, wb-ddr3-512mb, mt-ddr3-1gb, wb-ddr2-128mb */
-	};
 
 	reset: reset-controller {
 		compatible = "nuvoton,ma35d1-reset";
